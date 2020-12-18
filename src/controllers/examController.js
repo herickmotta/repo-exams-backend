@@ -4,6 +4,7 @@ const examSchemas = require("../schemas/exam");
 async function postExam(req,res){
     const newExam = req.body;
     const {error} = examSchemas.exam.validate(newExam);
+    console.log(error);
     if(error) return res.sendStatus(422);
     try{
         const exam = await examRepository.create(newExam);
@@ -47,7 +48,14 @@ async function getExams(req,res){
 
 async function getProfessors(req,res){
     try{
-        const professors = await examRepository.getProfessors();
+        const {subjectId} = req.params;
+        let professors = [];
+        if(subjectId === 'null'){
+            professors = await examRepository.getProfessors();
+        }else{
+            professors = await examRepository.getProfessorsBySubjectId(subjectId);
+        }
+
         res.send(professors);
     } 
     catch(e){
@@ -58,7 +66,13 @@ async function getProfessors(req,res){
 
 async function getSubjects(req,res){
     try{
-        const subjects = await examRepository.getSubjects();
+        const {professorId} = req.params;
+        let subjects = [];
+        if(professorId === 'null'){
+            subjects = await examRepository.getSubjects();
+        }else{
+            subjects = await examRepository.getSubjectsByProfessorId(professorId);
+        }
         res.send(subjects);
     } 
     catch(e){

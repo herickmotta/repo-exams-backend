@@ -23,12 +23,12 @@ async function getAll(){
 
 
 async function create(examParams){
-    const {year,professorId,subjectId,periodId} = examParams;
+    const {year,professorId,subjectId,periodId,URL} = examParams;
 
     await connection.query(`
-        INSERT INTO exams (year,professorId,subjectId,periodId)
-        VALUES ($1,$2,$3,$4)
-    `,[year,professorId,subjectId,periodId]);
+        INSERT INTO exams (year,"professorId","subjectId","periodId","URL")
+        VALUES ($1,$2,$3,$4,$5)
+    `,[year,professorId,subjectId,periodId,URL]);
 }
 
 async function getPeriods(){
@@ -46,11 +46,34 @@ async function getProfessors(){
     return result.rows;
 }
 
+async function getSubjectsByProfessorId(professorId){
+    const result = await connection.query(`
+        SELECT s.*,p.name AS "professor" FROM subjects AS "s"
+        JOIN professors AS "p" ON p.id = $1
+        JOIN subject_professor AS "sp" ON sp."professorId" = p.id
+        WHERE sp."subjectId" = s.id;
+    `,[professorId]);
+
+    return result.rows;
+}
+
+async function getProfessorsBySubjectId(subjectId){
+    const result = await connection.query(`
+        SELECT p.*,s.name AS "subject" FROM professors AS "p"
+        JOIN subjects AS "s" ON s.id = $1
+        JOIN subject_professor AS "sp" ON sp."subjectId" = s.id
+        WHERE sp."professorId" = p.id;
+    `,[subjectId]);
+
+    return result.rows;
+}
 
 module.exports = {
     getAll,
     create,
     getPeriods,
     getProfessors,
-    getSubjects
+    getSubjects,
+    getSubjectsByProfessorId,
+    getProfessorsBySubjectId
 }

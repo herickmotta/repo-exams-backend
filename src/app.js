@@ -9,6 +9,6 @@ app.use(express.json());
 app.get('/api/exams',examController.getExams);
 app.post('/api/exams',examController.postExam);
 app.get('/api/periods',examController.getPeriods);
-app.get('/api/professors',examController.getProfessors);
-app.get('/api/subjects',examController.getSubjects);
+app.get('/api/professors/subject/:subjectId',examController.getProfessors);
+app.get('/api/subjects/professor/:professorId',examController.getSubjects);
 module.exports = app;
