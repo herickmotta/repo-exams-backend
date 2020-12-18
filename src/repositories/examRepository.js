@@ -28,7 +28,13 @@ async function create(examParams){
     `,[year,professorId,subjectId,periodId]);
 }
 
+async function getPeriods(){
+    const result = await connection.query(`SELECT * FROM periods`);
+    return result.rows;
+}
+
 module.exports = {
     getAll,
-    create
+    create,
+    getPeriods
 }
