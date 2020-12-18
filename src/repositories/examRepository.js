@@ -5,19 +5,22 @@ async function getProfessorsSubject(){
     const result = await connection.query(`
         SELECT p.name as "pName",s.name as "sName" FROM professors as p 
         JOIN subject_professor as sp ON p.id = sp."professorId"
-        JOIN subject as s ON sp."subjectId" = s.id; 
+        JOIN subjects as s ON sp."subjectId" = s.id; 
     `)
 }
 async function getAll(){
     const result = await connection.query(`
-        SELECT e.id,e.year AS "year",p.name AS "professor",s.name AS "subject", periods.name as "period" FROM exams as "e"
-        JOIN professors AS "p" ON p.id = e."professorId"
-        JOIN subject AS "s" ON s.id = e."subjectId"
-        JOIN periods ON periods.id = e."periodId";
+        SELECT e.id,s.name as "subject",e.year,e."URL",
+        p.name AS "professor", periods.name AS "period" 
+        FROM subjects AS "s"
+        JOIN exams AS "e" ON e."subjectId" = s.id
+        JOIN professors AS "p" ON e."professorId" = p.id
+        JOIN periods ON e."periodId" = periods.id;
     `)
 
     return result.rows;
 }
+
 
 async function create(examParams){
     const {year,professorId,subjectId,periodId} = examParams;
@@ -33,8 +36,21 @@ async function getPeriods(){
     return result.rows;
 }
 
+async function getSubjects(){
+    const result = await connection.query('SELECT * FROM subjects');
+    return result.rows;
+}
+
+async function getProfessors(){
+    const result = await connection.query('SELECT * FROM professors');
+    return result.rows;
+}
+
+
 module.exports = {
     getAll,
     create,
-    getPeriods
+    getPeriods,
+    getProfessors,
+    getSubjects
 }
